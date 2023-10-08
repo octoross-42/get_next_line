@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: octoross <octoross@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:45:17 by octoross          #+#    #+#             */
-/*   Updated: 2023/06/08 18:48:53 by octoross         ###   ########.fr       */
+/*   Updated: 2023/10/08 12:03:04 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,12 @@
 
 # define GET_NEXT_LINE_H
 
-# include <stdio.h>
-
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 15
+#  define BUFFER_SIZE 4096
 # endif
 
 typedef struct s_list

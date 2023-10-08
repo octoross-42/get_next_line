@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:44:08 by octoross          #+#    #+#             */
-/*   Updated: 2023/06/10 03:41:38 by ebouvier         ###   ########.fr       */
+/*   Updated: 2023/10/08 12:08:07 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,3 +128,26 @@ char	*get_next_line(int fd)
 	line = line_of_lst(lst);
 	return (line);
 }
+
+// # include <stdio.h>
+
+// int	main(int argc, char **argv)
+// {
+// 	int	fd;
+// 	char	*line;
+
+// 	fd = 0;
+// 	if (argc > 1)
+// 		fd = open(argv[1], O_RDONLY);
+// 	if (fd < 0)
+// 		return (1);
+// 	line = get_next_line(fd);
+// 	while (line)
+// 	{
+// 		printf("%s", line);
+// 		line = get_next_line(fd);
+// 	}
+// 	free(line);
+// 	close(fd);
+// 	return (0);
+// }
