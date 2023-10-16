@@ -12,189 +12,124 @@
 
 #include "get_next_line_bonus.h"
 
-void	ft_clear_manager(t_list_manager **lm, t_list_manager *previous_manager, int fd)
+t_fm	*ft_get_fd(t_fm **leftovers, int fd, t_fm *previous, t_fm *current)
 {
-	t_list_manager	*next_manager;
-	t_list			*next;
+	t_fm	*fm;
 
-	next_manager = (*lm)->next;
-	while (next_manager && (!previous_manager || previous_manager->fd != fd))
-	{
-		if (next_manager->fd == fd)
-		{
-			next = next_manager->line;
-			while (next)
-			{
-				if (next->content)
-					free(next->content);
-				next = next->next;
-			}
-			if (previous_manager)
-				previous_manager->next = next_manager->next;
-			else
-				*lm = next_manager->next;
-			free(next_manager);
-		}
-		previous_manager = next_manager;
-		next_manager = next_manager->next;
-	}
-}
-
-t_list	*ft_get_fd(t_list_manager **lm, int fd)
-{
-	t_list	*list;
-
-	if (!lm || !(*lm))
-	{
-		*lm = (t_list_manager *)malloc(sizeof(t_list_manager));
-		if (*(lm))
-			return (NULL);
-		(*lm)->line = NULL;
-		(*lm)->next = NULL;
-		(*lm)->fd = -1;
-	}
-	while (*lm)
-	{
-		if ((*lm)->fd == fd)
-			return ((*lm)->line);
-		*lm = (*lm)->next;
-	}
-	list = (t_list *)malloc(sizeof(t_list));
-	if (!list)
-		return (ft_clear_manager(lm, NULL, fd), NULL);
-	list->content = NULL;
-	list->eol = 0;
-	list->len = 0;
-	list->next = NULL;
-	return (list);
-}
-
-void	ft_strfill(char **return_line, t_list **line, int size)
-{
-	t_list	*to_free;
-	int	i;
-
-	*return_line = (char *)malloc(sizeof(char) * (size + 1));
-	if (!(*return_line))
-		return ;
-	(*return_line)[size] = '\0';
-	size = 0;
-	while (line && *line)
-	{
-		i = 0;
-		while ((*line)->content[i] && ((*line)->eol < 0 || i <= (*line)->eol))
-		{
-			(*return_line)[size + i] = (*line)->content[i];
-			i ++;
-		}
-		size += (*line)->len;
-		if ((*line)->eol >= 0)
-			return ;
-		to_free = *line;
-		*line = (*line)->next;
-		free(to_free->content);
-		free(to_free);
-	}
-}
-
-char	*ft_list_to_str(t_list *l)
-{
-	char	*return_line;
-	int		size;
-	int		i;
-	t_list	*next;
-
-	size = (l->len) * (l->eol < 0) + l->eol * (l->eol >= 0) - l->start;
-	next = l;
-	while (next->eol < 0 && next->next)
-	{
-		size += next->len;
-		next = next->next;
-	}
-	size += next->eol + 1;
-	ft_strfill(&return_line, &l, size);
-	if (!return_line)
+	if (current && current->fd == fd)
+		return (current);
+	if (current)
+		return (ft_get_fd(leftovers, fd, previous->next, current->next));
+	fm = (t_fm *)malloc(sizeof(t_fm));
+	if (!fm)
 		return (NULL);
-	l->start += l->eol + 1;
-	i = 0;
-	while (l->content[i + l->start] && l->content[i + l->start] != '\n')
-		i ++;
-	l->eol = l->start + i;
-	return (return_line);
+	fm->size = 0;
+	fm->fd = fd;
+	fm->next = NULL;
+	fm->line = (t_list **)malloc(sizeof(t_list *));
+	if (!(fm->line))
+		return (free(fm), NULL);
+	*(fm->line) = NULL;
+	if (previous)
+		previous->next = fm;
+	else
+		*leftovers = fm;
+	return (fm);
 }
 
-int	ft_read_line(t_list_manager *manager, t_list *line, int fd)
+t_list	*ft_read_line(int fd, t_fm *fm)
 {
-	t_list	*next;
+	t_list	*line;
 	int		i;
 
-	if (line->eol >= 0)
+	line = (t_list *)malloc(sizeof(t_list));
+	if (!line)
+		return (NULL);
+	line->content = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!(line->content))
+		return (free(line), NULL);
+	line->start = 0;
+	line->len = read(fd, line->content, BUFFER_SIZE);
+	if (line->len <= 0)
+		return (free(line->content), free(line), NULL);
+	i = line->len;
+	while (i <= BUFFER_SIZE)
+		line->content[i ++] = '\0';
+	i = 0;
+	while (i < line->len && line->content[i] != '\n')
+		i ++;
+	line->eof = (line->len < BUFFER_SIZE);
+	line->eol = -1 + (i + 1) * (i < line->len);
+	line->next = NULL;
+	fm->size += (line->eol + 1) * (line->eol >= 0)
+		+ line->len * (line->eol < 0);
+	return (line);
+}
+
+int	ft_read(t_fm *fm, t_list **line, int fd)
+{
+	t_list	*next;
+
+	if (!(*line))
+		*line = ft_read_line(fd, fm);
+	if (!(*line))
 		return (1);
-	if (line->content)
-		next = line->next;
-	else
-		next = line;
-	while (next->eol < 0 && !next->eof)
+	next = *line;
+	while (next->eol < 0 && !(next->eof))
 	{
-		next->content = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		if (!(next->content))
-			return (ft_clear_manager(&manager, NULL, fd), 1);
-		next->content[BUFFER_SIZE] = '\0';
-		next->start = 0;
-		next->eof = 0;
-		next->eol = -1;
-		next->len = read(fd, next->content, O_RDONLY);
-		if (next->len <= 0)
-			return (ft_clear_manager(&manager, NULL, fd), 1);
-		i = 0;
-		if (next->len < BUFFER_SIZE)
+		next->next = ft_read_line(fd, fm);
+		if (!(next->next))
 			next->eof = 1;
-		while (i < next->len && next->content[i] != '\n')
-			i ++;
-		if (i < next->len || i < BUFFER_SIZE)
-			next->eol = i;
+		else
+			next = next->next;
 	}
 	return (0);
+}
+
+char	*ft_lst_to_str(t_fm *fm, t_list **l)
+{
+	char	*return_line;
+	int		i;
+	int		j;
+	int		eol_reached;
+
+	return_line = (char *)malloc(sizeof(char) * (fm->size + 1));
+	if (!return_line)
+		return (NULL);
+	return_line[fm->size] = '\0';
+	i = 0;
+	eol_reached = 0;
+	while (!eol_reached)
+	{
+		j = (*l)->start;
+		while (j <= (*l)->eol || (((*l)->eol < 0) && j < (*l)->len))
+			return_line[i ++] = (*l)->content[j ++];
+		(*l)->start = j;
+		while (j < (*l)->len && (*l)->content[j] != '\n')
+			j ++;
+		eol_reached = ((*l)->eol >= 0 || (*l)->eof);
+		fm->size = (j + (j < (*l)->len) - (*l)->start) * ((*l)->eol >= 0);
+		(*l)->eol = -1 + (j + 1) * (j < (*l)->len);
+		ft_clean_and_next_lst(l);
+	}
+	return (return_line);
 }
 
 char	*get_next_line(int fd)
 {
-	static t_list_manager	*leftovers = NULL;
-	t_list					*line;
+	static t_fm	*leftovers = NULL;
+	t_fm		*fm;
+	char		*return_line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-	{
-		if (leftovers && fd >= 0)
-			ft_clear_manager(&leftovers, NULL, fd);
-		return (NULL);
-	}
-	line = ft_get_fd(&leftovers, fd);
-	if (!line)
-		return (NULL);
-	if (ft_read_line(leftovers, line, fd))
-		return (NULL);
-	return (ft_list_to_str(line));
-}
-
-# include <stdio.h>
-
-int	main(int argc, char **argv)
-{
-	int	fd;
-	char	*line;
-
-	fd = 0;
-	if (argc > 1)
-		fd = open(argv[1], O_RDONLY);
-	if (fd < 0)
-		return (1);
-	line = get_next_line(fd);
-	while (line)
-	{
-		printf("%s", line);
-		line = get_next_line(fd);
-	}
-	free(line);
-	close(fd);
-	return (0);
+	if (fd < 0 || BUFFER_SIZE < 0)
+		return (ft_clear_manager(&leftovers, fd, NULL, leftovers), NULL);
+	fm = ft_get_fd(&leftovers, fd, NULL, leftovers);
+	if (!fm)
+		return (ft_clear_manager(&leftovers, -1, NULL, leftovers), NULL);
+	if (ft_read(fm, fm->line, fd))
+		return (ft_clear_manager(&leftovers, fd, NULL, leftovers), NULL);
+	return_line = ft_lst_to_str(fm, fm->line);
+	if (!return_line)
+		return (ft_clear_manager(&leftovers, fd, NULL, leftovers), NULL);
+	return (return_line);
 }
