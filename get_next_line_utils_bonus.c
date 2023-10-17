@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: octoross <octoross@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/08 11:57:44 by marvin            #+#    #+#             */
-/*   Updated: 2023/10/08 11:57:44 by marvin           ###   ########.fr       */
+/*   Created: 2023/10/17 15:03:05 by octoross          #+#    #+#             */
+/*   Updated: 2023/10/17 15:03:05 by octoross         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,22 +75,47 @@ void	ft_clean_and_next_lst(t_list **line)
 
 // int	main(int argc, char **argv)
 // {
-// 	int		fd;
-// 	char	*line;
+// 	int		fd1;
+// 	int		fd2;
+// 	int		fd3;
+// 	char	*line1;
+// 	char	*line2;
+// 	char	*line3;
 
-// 	fd = 0;
-// 	if (argc < 2)
+// 	if (argc < 4)
 // 		return (1);
-// 	fd = open(argv[1], O_RDONLY);
-// 	if (fd < 0)
+// 	fd1 = open(argv[1], O_RDONLY);
+// 	fd2 = open(argv[2], O_RDONLY);
+// 	fd3 = open(argv[3], O_RDONLY);
+// 	printf("1 %d 2 %d 3 %d\n", fd1, fd2, fd3);
+// 	if (fd1 < 0 || fd2 < 0 || fd3 < 0)
 // 		return (1);
-// 	line = get_next_line(fd);
-// 	while (line)
+// 	line1 = get_next_line(fd1);
+// 	line2 = get_next_line(fd2);
+// 	line3 = get_next_line(fd3);
+// 	while (line1 || line2 || line3)
 // 	{
-// 		printf("%s", line);
-// 		free(line);
-// 		line = get_next_line(fd);
+// 		if (line1)
+// 		{
+// 			printf("%s", line1);
+// 			free(line1);
+// 			line1 = get_next_line(fd1);
+// 		}
+// 		if (line2)
+// 		{
+// 			printf("%s", line2);
+// 			free(line2);
+// 			line2 = get_next_line(fd2);
+// 		}
+// 		if (line3)
+// 		{
+// 			printf("%s", line3);
+// 			free(line3);
+// 			line3 = get_next_line(fd3);
+// 		}
 // 	}
-// 	close(fd);
+// 	close(fd1);
+// 	close(fd2);
+// 	close(fd3);
 // 	return (0);
 // }

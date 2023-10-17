@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: octoross <octoross@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/08 12:11:45 by marvin            #+#    #+#             */
-/*   Updated: 2023/10/08 12:11:45 by marvin           ###   ########.fr       */
+/*   Created: 2023/10/17 15:03:26 by octoross          #+#    #+#             */
+/*   Updated: 2023/10/17 15:03:26 by octoross         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ typedef struct s_manager
 	t_list				**line;
 	struct s_manager	*next;
 }		t_fm;
+
+void	print_state(t_fm *lm);
 
 void	ft_clear_manager(t_fm **fm, int fd, t_fm *previous, t_fm *current);
 void	ft_clean_and_next_lst(t_list **line);

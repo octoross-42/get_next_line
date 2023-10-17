@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: octoross <octoross@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/08 11:57:47 by marvin            #+#    #+#             */
-/*   Updated: 2023/10/08 11:57:47 by marvin           ###   ########.fr       */
+/*   Created: 2023/10/17 15:03:17 by octoross          #+#    #+#             */
+/*   Updated: 2023/10/17 15:03:17 by octoross         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_fm	*ft_get_fd(t_fm **leftovers, int fd, t_fm *previous, t_fm *current)
 	if (current && current->fd == fd)
 		return (current);
 	if (current)
-		return (ft_get_fd(leftovers, fd, previous->next, current->next));
+		return (ft_get_fd(leftovers, fd, current, current->next));
 	fm = (t_fm *)malloc(sizeof(t_fm));
 	if (!fm)
 		return (NULL);
