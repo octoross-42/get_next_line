@@ -73,6 +73,9 @@ void	ft_clean_and_next_lst(t_list **line)
 // 	}
 // }
 
+// # include <fcntl.h>
+// # include <stdio.h>
+
 // int	main(int argc, char **argv)
 // {
 // 	int		fd1;

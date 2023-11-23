@@ -6,7 +6,7 @@
 /*   By: octoross <octoross@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:03:48 by octoross          #+#    #+#             */
-/*   Updated: 2023/11/23 15:05:42 by octoross         ###   ########.fr       */
+/*   Updated: 2023/11/23 15:53:36 by octoross         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,22 @@
 # include <unistd.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 4096
+#  define BUFFER_SIZE 10000000
 # endif
 
 typedef struct s_list
 {
+	int				size;
 	char			*content;
-	struct s_list	*next;
 	int				eof;
+	int				eol;
+	int				len;
+	int				start;
+	struct s_list	*next;
 }		t_list;
 
-int		ft_lstsize(t_list *lst);
-char	*ft_lstclear(t_list **lst, void (*del)(void *));
-t_list	*ft_lstnew(void);
-char	*ft_strdup(char *str);
-int		ft_append(char *str, char *to_add);
+void	ft_clear_leftovers(t_list **leftovers);
+void	ft_clean_and_next_lst(t_list **line);
 
 char	*get_next_line(int fd);
 
