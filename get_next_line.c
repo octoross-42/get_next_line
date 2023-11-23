@@ -6,13 +6,13 @@
 /*   By: octoross <octoross@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 15:33:02 by octoross          #+#    #+#             */
-/*   Updated: 2023/11/23 15:57:14 by octoross         ###   ########.fr       */
+/*   Updated: 2023/11/23 16:11:10 by octoross         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-t_list	*ft_read_line(int fd, t_list *leftovers)
+t_list	*ft_read_line(int fd)
 {
 	t_list	*line;
 	int		i;
@@ -37,9 +37,7 @@ t_list	*ft_read_line(int fd, t_list *leftovers)
 	line->eol = -1 + (i + 1) * (i < line->len);
 	line->next = NULL;
 	line->size = (line->eol + 1) * (line->eol >= 0)
-			+ line->len * (line->eol < 0);
-	if (leftovers)
-		leftovers->size += line->size;
+		+ line->len * (line->eol < 0);
 	return (line);
 }
 
@@ -48,17 +46,20 @@ int	ft_read(t_list **leftovers, int fd)
 	t_list	*next;
 
 	if (!(*leftovers))
-		*leftovers = ft_read_line(fd, *leftovers);
+		*leftovers = ft_read_line(fd);
 	if (!(*leftovers))
 		return (1);
 	next = *leftovers;
 	while (next->eol < 0 && !(next->eof))
 	{
-		next->next = ft_read_line(fd, *leftovers);
+		next->next = ft_read_line(fd);
 		if (!(next->next))
 			next->eof = 1;
 		else
+		{
 			next = next->next;
+			(*leftovers)->size += next->size;
+		}
 	}
 	return (0);
 }
@@ -95,7 +96,7 @@ char	*ft_lst_to_str(t_list **l)
 char	*get_next_line(int fd)
 {
 	static t_list	*leftovers = NULL;
-	char		*return_line;
+	char			*return_line;
 
 	if (fd < 0 || BUFFER_SIZE < 0)
 		return (ft_clear_leftovers(&leftovers), NULL);
