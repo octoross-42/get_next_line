@@ -5,102 +5,64 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: octoross <octoross@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/17 15:03:36 by octoross          #+#    #+#             */
-/*   Updated: 2023/10/17 15:03:38 by octoross         ###   ########.fr       */
+/*   Created: 2023/11/23 15:33:07 by octoross          #+#    #+#             */
+/*   Updated: 2023/11/23 15:57:19 by octoross         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_lstclear(t_list **lst, void (*del)(void *))
+void	ft_clear_leftovers(t_list **leftovers)
 {
-	if (*lst)
+	t_list	*next;
+	t_list	*to_free;
+
+	if (!(*leftovers))
+		return ;
+	next = *leftovers;
+	while (next)
 	{
-		if ((*lst)->next)
-		{
-			ft_lstclear(&(*lst)->next, del);
-			free((*lst)->next);
-		}
-		del((*lst)->content);
-		free(*lst);
+		if (next->content)
+			free(next->content);
+		to_free = next;
+		next = next->next;
+		free(to_free);
 	}
-	*lst = 0;
-	return (NULL);
 }
 
-t_list	*ft_lstnew(void)
+void	ft_clean_and_next_lst(t_list **line)
 {
-	t_list	*new;
-	int		i;
+	t_list	*to_free;
 
-	new = (t_list *)malloc(sizeof(t_list));
-	if (!new)
-		return (0);
-	new->content = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!new->content)
-		return (0);
-	i = 0;
-	while (i < BUFFER_SIZE + 1)
-		new->content[i++] = '\0';
-	new->next = 0;
-	new->eof = 0;
-	return (new);
-}
-
-int	ft_lstsize(t_list *lst)
-{
-	int	size;
-	int	len;
-
-	if (!lst)
-		return (-1);
-	size = 0;
-	while (lst)
+	if ((*line)->start >= (*line)->len)
 	{
-		len = 0;
-		while (lst->content[len])
-			len ++;
-		size += len;
-		lst = lst->next;
+		to_free = *line;
+		*line = (*line)->next;
+		free(to_free->content);
+		free(to_free);
 	}
-	return (size);
 }
 
-int	ft_append(char *str, char *to_add)
-{
-	int	i;
+// # include <stdio.h>
+// # include <fcntl.h>
 
-	if (!str || !to_add)
-		return (-1);
-	i = 0;
-	while (to_add[i])
-	{
-		str[i] = to_add[i];
-		i ++;
-	}
-	str[i] = '\0';
-	return (i);
-}
+// int	main(int argc, char **argv)
+// {
+// 	int	fd;
+// 	char	*line;
 
-char	*ft_strdup(char *str)
-{
-	int		i;
-	char	*dup;
-
-	if (!str)
-		return (NULL);
-	i = 0;
-	while (str[i])
-		i ++;
-	dup = (char *)malloc(sizeof(char) * (i + 1));
-	if (!dup)
-		return (NULL);
-	dup[i] = '\0';
-	i = 0;
-	while (str[i])
-	{
-		dup[i] = str[i];
-		i ++;
-	}
-	return (dup);
-}
+// 	fd = 0;
+// 	if (argc > 1)
+// 		fd = open(argv[1], O_RDONLY);
+// 	if (fd < 0)
+// 		return (1);
+// 	line = get_next_line(fd);
+// 	while (line)
+// 	{
+// 		printf("%s", line);
+// 		free(line);
+// 		line = get_next_line(fd);
+// 	}
+// 	close(fd);
+// 	return (0);
+// }
