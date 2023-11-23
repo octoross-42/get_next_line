@@ -6,7 +6,7 @@
 /*   By: octoross <octoross@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:03:42 by octoross          #+#    #+#             */
-/*   Updated: 2023/10/17 15:03:43 by octoross         ###   ########.fr       */
+/*   Updated: 2023/11/23 15:05:46 by octoross         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,25 +129,26 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-// # include <stdio.h>
+# include <stdio.h>
+# include <fcntl.h>
 
-// int	main(int argc, char **argv)
-// {
-// 	int	fd;
-// 	char	*line;
+int	main(int argc, char **argv)
+{
+	int	fd;
+	char	*line;
 
-// 	fd = 0;
-// 	if (argc > 1)
-// 		fd = open(argv[1], O_RDONLY);
-// 	if (fd < 0)
-// 		return (1);
-// 	line = get_next_line(fd);
-// 	while (line)
-// 	{
-// 		printf("%s", line);
-// 		line = get_next_line(fd);
-// 	}
-// 	free(line);
-// 	close(fd);
-// 	return (0);
-// }
+	fd = 0;
+	if (argc > 1)
+		fd = open(argv[1], O_RDONLY);
+	if (fd < 0)
+		return (1);
+	line = get_next_line(fd);
+	while (line)
+	{
+		printf("%s", line);
+		line = get_next_line(fd);
+	}
+	free(line);
+	close(fd);
+	return (0);
+}
